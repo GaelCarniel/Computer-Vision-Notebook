@@ -51,9 +51,12 @@ Investigates how classification performance degrades when training data is sever
 | Training shots | Total train images | Notes                        |
 |----------------|--------------------|------------------------------|
 | 10 shots       | 210 (10/class)     | Extreme low-data regime      |
+| 30 shots       | 630 (30/class)     | Low-data regime              |
+| 50 shots       | 1050 (50/class)    | Medium-data regime           |
 | 80 shots       | 1680 (80/class)    | Full training set (baseline) |
 
-The validation and test sets are kept **identical** across both experiments to ensure a fair comparison. Results are presented as:
+
+The validation and test sets are kept **identical** across experiments to ensure a fair comparison. Results are presented as:
 - **Accuracy vs. shots curve** — quantifies the performance drop from full to few-shot training
 - **Grad-CAM per shot size** — visualizes how the model's attention shifts with less training data
 
