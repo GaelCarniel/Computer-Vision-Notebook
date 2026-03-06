@@ -32,11 +32,11 @@ The main notebook. Trains a VGG16-based classifier using bottleneck feature extr
 ### `comparison_architecture.ipynb` — Architecture comparison
 Benchmarks three architectures side by side using the same training pipeline and dataset split.
 
-| Architecture   | Test Accuracy | Notes                          |
-|----------------|---------------|--------------------------------|
-| VGG16          | ~90%          | Baseline                       |
-| EfficientNetB0 | ~90%          | Fastest training               |
-| ResNet50       | ~96%          | Best accuracy                  |
+| Architecture   | Test Accuracy | Notes               |
+|----------------|---------------|---------------------|
+| VGG16          | ~80%          | Baseline            |
+| EfficientNetB0 | ~95%          | Fastest training    |
+| ResNet50       | ~95%          | Good accuracy       |
 
 Each architecture is evaluated with:
 - **Confusion matrix** — side-by-side normalized heatmaps across all 21 classes
@@ -44,6 +44,20 @@ Each architecture is evaluated with:
 - **Training time** — wall-clock time reported for each architecture as a practical reference
 
 > **Note on preprocessing:** Each architecture requires its own preprocessing function (`vgg16_preprocess`, `resnet_preprocess`, `efficientnet_preprocess`). Using the wrong one causes the model to produce random predictions — a subtle bug documented and fixed during development.
+
+### `few_shot_efficientnet.ipynb` — Few-shot learning experiment
+Investigates how classification performance degrades when training data is severely limited, using EfficientNetB0 as the backbone.
+
+| Training shots | Total train images | Notes                        |
+|----------------|--------------------|------------------------------|
+| 10 shots       | 210 (10/class)     | Extreme low-data regime      |
+| 80 shots       | 1680 (80/class)    | Full training set (baseline) |
+
+The validation and test sets are kept **identical** across both experiments to ensure a fair comparison. Results are presented as:
+- **Accuracy vs. shots curve** — quantifies the performance drop from full to few-shot training
+- **Grad-CAM per shot size** — visualizes how the model's attention shifts with less training data
+
+> EfficientNetB0 was chosen for this experiment as it is specifically designed to perform well in low-data regimes, making it the most meaningful architecture to stress-test with limited samples.
 
 ---
 
@@ -55,7 +69,7 @@ Each architecture is evaluated with:
 pip install tensorflow keras scikit-learn scikit-image opencv-python matplotlib kagglehub seaborn
 ```
 
-**Download the dataset** (handled automatically in the notebook via `kagglehub`):
+**Download the dataset** (handled automatically in the notebooks via `kagglehub`):
 
 ```python
 import kagglehub
@@ -74,11 +88,14 @@ jupyter notebook train_vgg16_uc_merced.ipynb
 
 # Architecture comparison
 jupyter notebook comparison_architecture.ipynb
+
+# Few-shot experiment
+jupyter notebook few_shot_efficientnet.ipynb
 ```
 
-Run cells sequentially in both notebooks — the dataset is downloaded and split automatically.
+Run cells sequentially in all notebooks — the dataset is downloaded and split automatically.
 
-**To test on your own images**, add `.jpg` files to `data/external_data/` and update the paths in the last section of `train_vgg16_uc_merced.ipynb`.
+**To test on your own images**, add `.jpg` files to `external_data/` and update the paths in the last section of `train_vgg16_uc_merced.ipynb`.
 
 ---
 
@@ -91,20 +108,23 @@ Model weights and dataset are not included in this repo — they are reproducibl
 
 ```
 .
-├── train_vgg16_uc_merced.ipynb     # Baseline VGG16 notebook
-├── comparison_architecture.ipynb   # Architecture comparison notebook
-├── data/                           # Generated on first run (not tracked)
-│   ├── converted_uc_merced_data/
-│   │   ├── train/
-│   │   ├── validate/
-│   │   └── test/
-├── external_data/                  # Place custom test images here
-├── figure/
-   ├── confusion_matrix.png
-   ├── gradcam_results.png
-   ├── model_plot.png
-   ├── comparison_confusion_matrices.png
-   └── gradcam_comparison.png
+├── train_vgg16_uc_merced.ipynb       # Baseline VGG16 notebook
+├── comparison_architecture.ipynb     # Architecture comparison notebook
+├── few_shot_efficientnet.ipynb       # Few-shot learning notebook
+├── data/                             # Generated on first run (not tracked)
+│   └── converted_uc_merced_data/
+│       ├── train/
+│       ├── validate/
+│       └── test/
+├── external_data/                    # Place custom test images here
+└── figures/
+    ├── confusion_matrix.png
+    ├── gradcam_results.png
+    ├── model_plot.png
+    ├── comparison_confusion_matrices.png
+    ├── gradcam_comparison.png
+    ├── fewshot_accuracy_curve.png
+    └── gradcam_fewshot.png
 ```
 
 ---
